@@ -10,7 +10,7 @@ import java.util.HashSet;
 public class Main {
 
     public static void main(String[] args)
-      throws InstantiationException, IllegalAccessException {
+      throws InstantiationException, IllegalAccessException{
 
 
         ProducerConsumerSystem system = new ProducerConsumerSystem();
@@ -19,11 +19,13 @@ public class Main {
         system.setBufferSize(20);
         system.run();
 
+        system.addProducer(new MyProducer("dynamic add"));
+
 
     }
 
     private static void addProducers(ProducerConsumerSystem system)
-      throws InstantiationException, IllegalAccessException {
+      throws InstantiationException, IllegalAccessException{
         //you can add producer one by one
         system.addProducer(new MyProducer("cool"));
         system.addProducer(new MyProducer("yes"));

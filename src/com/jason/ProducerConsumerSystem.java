@@ -10,9 +10,16 @@ public class ProducerConsumerSystem <T>{
   private int queueSize;
   private Collection<Producer> producerList = new HashSet<Producer>();
   private Collection<Consumer> consumerList = new HashSet<Consumer>();
+  private State state;
+  private BlockingQueue<T> queue;
+
+  public ProducerConsumerSystem(){
+    setState(State.BeforeRunning);
+  }
 
   public void run(){
     try {
+      setState(State.Running);
       mainFlow();
     } catch (IllegalAccessException e) {
       e.printStackTrace();
@@ -21,11 +28,17 @@ public class ProducerConsumerSystem <T>{
     }
   }
 
+  private synchronized void setState(State newState){
+    this.state = newState;
+  }
+
+  private synchronized State getState(){
+    return this.state;
+  }
+
   private void mainFlow()
     throws IllegalAccessException, InstantiationException {
-    BlockingQueue<T> queue =
-      new ArrayBlockingQueue<>(queueSize);
-
+    queue = new ArrayBlockingQueue<>(queueSize);
     for(Producer p : this.producerList){
       p.setQueue(queue);
     }
@@ -49,8 +62,17 @@ public class ProducerConsumerSystem <T>{
     this.queueSize = queueSize;
   }
 
-  public void addProducer(Producer producerObj) {
-    this.producerList.add(producerObj);
+  public void addProducer(Producer producerObj){
+    if(getState() == State.BeforeRunning) {
+      this.producerList.add(producerObj);
+    }else if(getState() == State.Running){
+      setQueueAndStart(producerObj);
+    }
+  }
+
+  private void setQueueAndStart(Producer producerObj) {
+    producerObj.setQueue(queue);
+    new Thread(producerObj).start();
   }
 
   public <P extends Producer> AddProducerTemp addProducer(
@@ -74,4 +96,11 @@ public class ProducerConsumerSystem <T>{
   public void addProducers(Collection<Producer> producers) {
     this.producerList.addAll(producers);
   }
+
+  enum State{
+    BeforeRunning, Running
+  }
+
 }
+
+

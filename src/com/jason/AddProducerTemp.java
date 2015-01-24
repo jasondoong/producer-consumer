@@ -13,7 +13,7 @@ public class AddProducerTemp <P extends Producer>{
   }
 
   public void instanceNum(int instanceNum)
-    throws IllegalAccessException, InstantiationException {
+    throws IllegalAccessException, InstantiationException{
 
     for(int i=0; i<instanceNum; i++) {
       system.addProducer(this.producerClass.newInstance());
