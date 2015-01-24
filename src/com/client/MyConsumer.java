@@ -1,11 +1,11 @@
 package com.client;
 
-import com.jason.Consumer;
+import com.jason.ConsumerElement;
 
 /**
  * Created by jason on 2015/1/24.
  */
-public class MyConsumer extends Consumer <Message>{
+public class MyConsumer extends ConsumerElement<Message> {
   @Override
   public void run() {
     try{

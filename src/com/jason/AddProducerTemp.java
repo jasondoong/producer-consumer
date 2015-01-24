@@ -3,7 +3,7 @@ package com.jason;
 /**
  * Created by jason on 2015/1/24.
  */
-public class AddProducerTemp <P extends Producer>{
+public class AddProducerTemp <P extends ProducerElement>{
   private Class<P> producerClass;
   private ProducerConsumerSystem system;
   public  AddProducerTemp(Class<P> producerClass,

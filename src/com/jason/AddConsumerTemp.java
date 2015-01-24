@@ -3,7 +3,7 @@ package com.jason;
 /**
  * Created by jason on 2015/1/24.
  */
-public  class AddConsumerTemp <C extends Consumer>{
+public  class AddConsumerTemp <C extends ConsumerElement>{
   private Class<C> consumerClass;
   private ProducerConsumerSystem system;
   public  AddConsumerTemp(Class<C> consumerClass,

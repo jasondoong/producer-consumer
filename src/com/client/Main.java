@@ -1,7 +1,7 @@
 package com.client;
 
-import com.jason.Consumer;
-import com.jason.Producer;
+import com.jason.ConsumerElement;
+import com.jason.ProducerElement;
 import com.jason.ProducerConsumerSystem;
 
 import java.util.Collection;
@@ -31,7 +31,7 @@ public class Main {
         system.addProducer(new MyProducer("yes"));
 
         //or you can add a list of producer
-        Collection<Producer> producers = new HashSet<>();
+        Collection<ProducerElement> producers = new HashSet<>();
         producers.add(new MyProducer("one"));
         producers.add(new MyProducer("two"));
         system.addProducers(producers);
@@ -47,7 +47,7 @@ public class Main {
         system.addConsumer(new MyConsumer());
 
         //or you can add a list of consumer objects
-        Collection<Consumer> consumers = new HashSet<>();
+        Collection<ConsumerElement> consumers = new HashSet<>();
         consumers.add(new MyConsumer());
         consumers.add(new MyConsumer());
         system.addConsumers(consumers);

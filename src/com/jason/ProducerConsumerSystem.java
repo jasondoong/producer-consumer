@@ -8,8 +8,8 @@ import java.util.concurrent.BlockingQueue;
 public class ProducerConsumerSystem <T>{
 
   private int queueSize;
-  private Collection<Producer> producerList = new HashSet<Producer>();
-  private Collection<Consumer> consumerList = new HashSet<Consumer>();
+  private Collection<ProducerElement> producerList = new HashSet<ProducerElement>();
+  private Collection<ConsumerElement> consumerList = new HashSet<ConsumerElement>();
   private State state;
   private BlockingQueue<T> queue;
 
@@ -39,19 +39,19 @@ public class ProducerConsumerSystem <T>{
   private void mainFlow()
     throws IllegalAccessException, InstantiationException {
     queue = new ArrayBlockingQueue<>(queueSize);
-    for(Producer p : this.producerList){
+    for(ProducerElement p : this.producerList){
       p.setQueue(queue);
     }
-    for(Consumer c : this.consumerList){
+    for(ConsumerElement c : this.consumerList){
       c.setQueue(queue);
     }
 
     //starting producer to produce messages in queue
-    for(Producer p : this.producerList) {
+    for(ProducerElement p : this.producerList) {
       new Thread(p).start();
     }
     //starting consumer to consume messages from queue
-    for(Consumer c : this.consumerList) {
+    for(ConsumerElement c : this.consumerList) {
       new Thread(c).start();
     }
 
@@ -62,7 +62,7 @@ public class ProducerConsumerSystem <T>{
     this.queueSize = queueSize;
   }
 
-  public void addProducer(Producer producerObj){
+  public void addProducer(ProducerElement producerObj){
     if(getState() == State.BeforeRunning) {
       this.producerList.add(producerObj);
     }else if(getState() == State.Running){
@@ -70,30 +70,30 @@ public class ProducerConsumerSystem <T>{
     }
   }
 
-  private void setQueueAndStart(Producer producerObj) {
+  private void setQueueAndStart(ProducerElement producerObj) {
     producerObj.setQueue(queue);
     new Thread(producerObj).start();
   }
 
-  public <P extends Producer> AddProducerTemp addProducer(
+  public <P extends ProducerElement> AddProducerTemp addProducer(
     Class<P> producerClass) {
     return new AddProducerTemp(producerClass, this);
   }
 
-  public void addConsumer(Consumer consumerObj) {
+  public void addConsumer(ConsumerElement consumerObj) {
     this.consumerList.add(consumerObj);
   }
 
-  public <C extends Consumer> AddConsumerTemp addConsumer(
+  public <C extends ConsumerElement> AddConsumerTemp addConsumer(
     Class<C> consumerClass) {
     return new AddConsumerTemp(consumerClass, this);
   }
 
-  public void addConsumers(Collection<Consumer> consumers) {
+  public void addConsumers(Collection<ConsumerElement> consumers) {
     this.consumerList.addAll(consumers);
   }
 
-  public void addProducers(Collection<Producer> producers) {
+  public void addProducers(Collection<ProducerElement> producers) {
     this.producerList.addAll(producers);
   }
 

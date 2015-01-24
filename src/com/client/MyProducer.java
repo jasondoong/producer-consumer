@@ -1,11 +1,11 @@
 package com.client;
 
-import com.jason.Producer;
+import com.jason.ProducerElement;
 
 /**
  * Created by jason on 2015/1/24.
  */
-public class MyProducer extends Producer <Message>{
+public class MyProducer extends ProducerElement<Message> {
 
   String basicMessage;
   public MyProducer(String message){
