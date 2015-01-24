@@ -1,4 +1,4 @@
-package com.jason;
+package com.client;
 
 public class Message {
   private String msg;

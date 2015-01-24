@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-public class ProducerConsumerSystem {
+public class ProducerConsumerSystem <T>{
 
   private int queueSize;
   private Collection<Producer> producerList = new HashSet<Producer>();
@@ -23,7 +23,7 @@ public class ProducerConsumerSystem {
 
   private void mainFlow()
     throws IllegalAccessException, InstantiationException {
-    BlockingQueue<Message> queue =
+    BlockingQueue<T> queue =
       new ArrayBlockingQueue<>(queueSize);
 
     for(Producer p : this.producerList){
