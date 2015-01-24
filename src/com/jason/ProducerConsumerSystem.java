@@ -21,6 +21,7 @@ public class ProducerConsumerSystem <T>{
     try {
       setState(State.Running);
       mainFlow();
+      //Todo: set state to State.AfterRunnig when all tasks end
     } catch (IllegalAccessException e) {
       e.printStackTrace();
     } catch (InstantiationException e) {
@@ -39,13 +40,12 @@ public class ProducerConsumerSystem <T>{
   private void mainFlow()
     throws IllegalAccessException, InstantiationException {
     queue = new ArrayBlockingQueue<>(queueSize);
-    for(ProducerElement p : this.producerList){
-      p.setQueue(queue);
-    }
-    for(ConsumerElement c : this.consumerList){
-      c.setQueue(queue);
-    }
+    setQueueToAllElements();
+    startAllElements();
+    System.out.println("Producer and Consumer has been started");
+  }
 
+  private void startAllElements() {
     //starting producer to produce messages in queue
     for(ProducerElement p : this.producerList) {
       new Thread(p).start();
@@ -54,8 +54,15 @@ public class ProducerConsumerSystem <T>{
     for(ConsumerElement c : this.consumerList) {
       new Thread(c).start();
     }
+  }
 
-    System.out.println("Producer and Consumer has been started");
+  private void setQueueToAllElements() {
+    for(ProducerElement p : this.producerList){
+      p.setQueue(queue);
+    }
+    for(ConsumerElement c : this.consumerList){
+      c.setQueue(queue);
+    }
   }
 
   public void setBufferSize(int queueSize) {
