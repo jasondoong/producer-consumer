@@ -11,7 +11,7 @@ public class MyConsumer extends ConsumerElement<Message> {
     try{
       Message msg;
       //consuming messages until exit message is received
-      while((msg = queue.take()).getMsg() !="exit"){
+      while((msg = getFromBuffer()).getMsg() !="exit"){
         System.out.println("                        "+
           "["+Thread.currentThread().getId()+"]"+
           " takes "+msg.getMsg());

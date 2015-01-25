@@ -23,7 +23,7 @@ public class MyProducer extends ProducerElement<Message> {
         this.basicMessage+" "+i);
       try {
         Thread.sleep(500);
-        queue.put(msg);
+        addToBuffer(msg);
         System.out.println(
           " Puts "+msg.getMsg());
       } catch (InterruptedException e) {
