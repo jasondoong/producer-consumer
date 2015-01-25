@@ -50,8 +50,6 @@ public class ProducerConsumerSystem <T>{
             thisSystem.setState(ProducerConsumerSystem.State.AllProcuderTerminated);
             System.out.println(thisSystem.getState());
             break;
-          }else{
-            System.out.println("Producers are running");
           }
 
           try {
