@@ -10,6 +10,8 @@ public class ProducerConsumerSystem <T>{
   private int queueSize;
   private Collection<ProducerElement> producerList = new HashSet<ProducerElement>();
   private Collection<ConsumerElement> consumerList = new HashSet<ConsumerElement>();
+  private Collection<Thread> producerThreads = new HashSet<>();
+  private Collection<Thread> consumerThreads = new HashSet<>();
   private State state;
   private BlockingQueue<T> queue;
 
@@ -39,6 +41,7 @@ public class ProducerConsumerSystem <T>{
 
   private void mainFlow()
     throws IllegalAccessException, InstantiationException {
+
     queue = new ArrayBlockingQueue<>(queueSize);
     setQueueToAllElements();
     startAllElements();
@@ -46,13 +49,25 @@ public class ProducerConsumerSystem <T>{
   }
 
   private void startAllElements() {
-    //starting producer to produce messages in queue
-    for(ProducerElement p : this.producerList) {
-      new Thread(p).start();
-    }
+    addToThreadSetAndStartAllProducer();
+    addToThreadSetAndStartAllConsumer();
+  }
+
+  private void addToThreadSetAndStartAllConsumer() {
     //starting consumer to consume messages from queue
     for(ConsumerElement c : this.consumerList) {
-      new Thread(c).start();
+      Thread t = new Thread(c);
+      consumerThreads.add(t);
+      t.start();
+    }
+  }
+
+  private void addToThreadSetAndStartAllProducer() {
+    //starting producer to produce messages in queue
+    for(ProducerElement p : this.producerList) {
+      Thread t = new Thread(p);
+      producerThreads.add(t);
+      t.start();
     }
   }
 
