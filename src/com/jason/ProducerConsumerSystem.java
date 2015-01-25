@@ -14,21 +14,54 @@ public class ProducerConsumerSystem <T>{
   private Collection<Thread> consumerThreads = new HashSet<>();
   private State state;
   private BlockingQueue<T> queue;
+  private ProducerConsumerSystem thisSystem;
 
   public ProducerConsumerSystem(){
     setState(State.BeforeRunning);
+    thisSystem = this;
   }
 
   public void run(){
     try {
       setState(State.Running);
       mainFlow();
+      startMonitoringProducerThreads();
       //Todo: set state to State.AfterRunnig when all tasks end
     } catch (IllegalAccessException e) {
       e.printStackTrace();
     } catch (InstantiationException e) {
       e.printStackTrace();
     }
+  }
+
+  //Todo: what if user add a new producer after all producer threads are terminated?
+  private void startMonitoringProducerThreads() {
+    new Thread(){
+      public void run(){
+        while(true) {
+          Boolean areAllThreadsEnd = true;
+          for (Thread t : producerThreads) {
+            if (t.getState() != State.TERMINATED) {
+              areAllThreadsEnd = false;
+            }
+          }
+          if (areAllThreadsEnd) {
+            System.out.println("All producers end");
+            thisSystem.setState(ProducerConsumerSystem.State.AllProcuderTerminated);
+            System.out.println(thisSystem.getState());
+            break;
+          }else{
+            System.out.println("Producers are running");
+          }
+
+          try {
+            Thread.sleep(500);
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
+        }
+      }
+    }.start();
   }
 
   private synchronized void setState(State newState){
@@ -120,7 +153,7 @@ public class ProducerConsumerSystem <T>{
   }
 
   enum State{
-    BeforeRunning, Running
+    BeforeRunning, Running, AllProcuderTerminated
   }
 
 }
