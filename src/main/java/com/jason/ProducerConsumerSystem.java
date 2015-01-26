@@ -41,7 +41,7 @@ public class ProducerConsumerSystem <T>{
     new Thread(){
       public void run(){
         while(true) {
-          if(conSumerShouldStop()){
+          if(consumersShouldStop()){
             tryToStopAllConsumer();
           }
 
@@ -54,7 +54,7 @@ public class ProducerConsumerSystem <T>{
     }.start();
   }
 
-  private boolean conSumerShouldStop() {
+  private boolean consumersShouldStop() {
     return isAllProcuderEnd()&& isBufferEmpty();
   }
 
