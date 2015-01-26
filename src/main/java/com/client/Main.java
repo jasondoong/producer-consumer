@@ -17,8 +17,9 @@ public class Main {
         system.addProducer(MyProducer.class).instanceNum(3);
         system.addConsumer(MyConsumer.class).instanceNum(5);
         system.setBufferSize(20);
-        system.run();
+        system.start();
 
+        //you can add new producer after system starts
         system.addProducer(new MyProducer("dynamic add"));
 
 

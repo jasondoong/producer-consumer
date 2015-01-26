@@ -16,16 +16,21 @@ public class ProducerConsumerSystem <T>{
   private BlockingQueue<T> queue;
   private ProducerConsumerSystem thisSystem;
 
+  enum State{
+    BeforeRunning, Running, AllProcuderTerminated
+  }
+
   public ProducerConsumerSystem(){
     setState(State.BeforeRunning);
     thisSystem = this;
   }
 
-  public void run(){
+  public void start(){
     try {
       setState(State.Running);
-      mainFlow();
+      startMainFlow();
       startMonitoringProducerThreads();
+
       //Todo: set state to State.AfterRunnig when all tasks end
     } catch (IllegalAccessException e) {
       e.printStackTrace();
@@ -39,27 +44,27 @@ public class ProducerConsumerSystem <T>{
     new Thread(){
       public void run(){
         while(true) {
-          Boolean areAllThreadsEnd = true;
-          for (Thread t : producerThreads) {
-            if (t.getState() != State.TERMINATED) {
-              areAllThreadsEnd = false;
-            }
-          }
-          if (areAllThreadsEnd) {
-            System.out.println("All producers end");
+          if (isAllThreadsEnd(producerThreads)) {
             thisSystem.setState(ProducerConsumerSystem.State.AllProcuderTerminated);
             System.out.println(thisSystem.getState());
             break;
           }
 
-          try {
-            Thread.sleep(500);
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-          }
+          threadSleep(500);
+
         }
       }
     }.start();
+  }
+
+  private Boolean isAllThreadsEnd(Collection<Thread> threads) {
+    Boolean allEnd = true;
+    for (Thread t : threads) {
+      if (t.getState() != Thread.State.TERMINATED) {
+        allEnd = false;
+      }
+    }
+    return allEnd;
   }
 
   private synchronized void setState(State newState){
@@ -70,7 +75,7 @@ public class ProducerConsumerSystem <T>{
     return this.state;
   }
 
-  private void mainFlow()
+  private void startMainFlow()
     throws IllegalAccessException, InstantiationException {
 
     queue = new ArrayBlockingQueue<>(queueSize);
@@ -150,8 +155,14 @@ public class ProducerConsumerSystem <T>{
     this.producerList.addAll(producers);
   }
 
-  enum State{
-    BeforeRunning, Running, AllProcuderTerminated
+  //I don't like everytime I want threads to sleep , I have to do try catch
+  // in that method, so I create this method.
+  void threadSleep(int milliseconds){
+    try {
+      Thread.sleep(milliseconds);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
   }
 
 }
