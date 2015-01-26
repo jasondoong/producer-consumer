@@ -144,7 +144,9 @@ public class ProducerConsumerSystem <T>{
 
   private void setQueueAndStart(ProducerElement producerObj) {
     producerObj.setQueue(queue);
-    new Thread(producerObj).start();
+    Thread t = new Thread(producerObj);
+    this.producerThreads.add(t);
+    t.start();
   }
 
   public <P extends ProducerElement> AddProducerTemp addProducer(
