@@ -24,24 +24,57 @@ public class ProducerConsumerSystem <T>{
   }
 
   public ProducerConsumerSystem(){
-
     setState(State.BeforeRunning);
     thisSystem = this;
   }
 
-  public void start(){
-    try {
+  public void start() throws InstantiationException, IllegalAccessException {
+
       setState(State.Running);
       startMainFlow();
       startMonitoringProducerThreads();
       startMonitoringConsumerThreads();
       waitProducerEndThenStopConsumer();
-      //Todo: set state to State.AfterRunnig when all tasks end
-    } catch (IllegalAccessException e) {
-      e.printStackTrace();
-    } catch (InstantiationException e) {
-      e.printStackTrace();
-    }
+  }
+
+  private void startMainFlow()
+    throws IllegalAccessException, InstantiationException {
+
+    queue = new ArrayBlockingQueue<>(queueSize);
+    setQueueToAllElements();
+    startAllElements();
+    System.out.println("Producer and Consumer has been started");
+  }
+
+  //Todo: what if user add a new producer after all producer threads are terminated?
+  private void startMonitoringProducerThreads() {
+    new Thread(){
+      public void run(){
+        while(true) {
+          if (isAllProcuderEnd()) {
+            thisSystem.setState(ProducerConsumerSystem.State.AllProcuderTerminated);
+            System.out.println(thisSystem.getState());
+            break;
+          }
+          threadSleep(500);
+        }
+      }
+    }.start();
+  }
+
+  private void startMonitoringConsumerThreads() {
+    new Thread(){
+      public void run(){
+        while(true) {
+          if (isAllConsumerEnd()) {
+            thisSystem.allConsumerTerminated = true;
+            System.out.println("allConsumerTerminated");
+            break;
+          }
+          threadSleep(500);
+        }
+      }
+    }.start();
   }
 
   private void waitProducerEndThenStopConsumer() {
@@ -62,18 +95,11 @@ public class ProducerConsumerSystem <T>{
   }
 
   private boolean isAllProcuderEnd() {
-    return getState()==State.AllProcuderTerminated;
+    return isAllThreadsEnd(this.producerThreads);
   }
 
   private boolean isAllConsumerEnd(){
-    boolean allEnd = true;
-    for(Thread t : consumerThreads){
-      if(t.getState()!=Thread.State.TERMINATED){
-        allEnd = false;
-        break;
-      }
-    }
-    return allEnd;
+    return isAllThreadsEnd(this.consumerThreads);
   }
 
   private void tryToStopAllConsumer(){
@@ -82,41 +108,6 @@ public class ProducerConsumerSystem <T>{
         t.interrupt();
       }
     }
-  }
-
-  private void startMonitoringConsumerThreads() {
-    new Thread(){
-      public void run(){
-        while(true) {
-          if (isAllThreadsEnd(consumerThreads)) {
-            thisSystem.allConsumerTerminated = true;
-            System.out.println("allConsumerTerminated");
-            break;
-          }else {
-            for (Thread t : consumerThreads) {
-              System.out.println(t.getState());
-            }
-          }
-          threadSleep(500);
-        }
-      }
-    }.start();
-  }
-
-  //Todo: what if user add a new producer after all producer threads are terminated?
-  private void startMonitoringProducerThreads() {
-    new Thread(){
-      public void run(){
-        while(true) {
-          if (isAllThreadsEnd(producerThreads)) {
-            thisSystem.setState(ProducerConsumerSystem.State.AllProcuderTerminated);
-            System.out.println(thisSystem.getState());
-            break;
-          }
-          threadSleep(500);
-        }
-      }
-    }.start();
   }
 
   private Boolean isAllThreadsEnd(Collection<Thread> threads) {
@@ -135,15 +126,6 @@ public class ProducerConsumerSystem <T>{
 
   private synchronized State getState(){
     return this.state;
-  }
-
-  private void startMainFlow()
-    throws IllegalAccessException, InstantiationException {
-
-    queue = new ArrayBlockingQueue<>(queueSize);
-    setQueueToAllElements();
-    startAllElements();
-    System.out.println("Producer and Consumer has been started");
   }
 
   private void startAllElements() {
