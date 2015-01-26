@@ -7,47 +7,41 @@ import java.util.concurrent.BlockingQueue;
 
 public class ProducerConsumerSystem <T>{
 
-  private int queueSize;
-  private Collection<ProducerElement> producerList = new HashSet<ProducerElement>();
-  private Collection<ConsumerElement> consumerList = new HashSet<ConsumerElement>();
   private Collection<Thread> producerThreads = new HashSet<>();
   private Collection<Thread> consumerThreads = new HashSet<>();
 
-  private State state;
   private BlockingQueue<T> queue;
   private ProducerConsumerSystem thisSystem;
 
-  enum State{
-    BeforeRunning, Running
-  }
-
-  public ProducerConsumerSystem(){
-
-    setState(State.BeforeRunning);
+  public ProducerConsumerSystem(int bufferSize){
     thisSystem = this;
+    initialBuffer(bufferSize);
+    waitingFirstProducer();
   }
 
-  public void start() throws InstantiationException, IllegalAccessException {
-
-    startMainFlow();
-    stopConsumerWhenProducerEnd();
+  private void initialBuffer(int bufferSize) {
+    queue = new ArrayBlockingQueue<>(bufferSize);
   }
 
-  private void startMainFlow()
-    throws IllegalAccessException, InstantiationException {
-
-    initialBuffer();
-    setQueueToAllElements();
-    startAllElements();
-    setState(State.Running);
-    System.out.println("Producer and Consumer has been started");
+  private void waitingFirstProducer() {
+    new Thread(){
+      public void run(){
+        while(true) {
+          if(thisSystem.producerThreads.size()>0){
+            stopConsumerWhenProducerEnd();
+            break;
+          }
+          threadSleep(500);
+        }
+      }
+    }.start();
   }
 
   private void stopConsumerWhenProducerEnd() {
     new Thread(){
       public void run(){
         while(true) {
-          if(thisSystem.isAllProcuderEnd()){
+          if(conSumerShouldStop()){
             tryToStopAllConsumer();
           }
 
@@ -60,24 +54,13 @@ public class ProducerConsumerSystem <T>{
     }.start();
   }
 
-  private void initialBuffer() {
-    queue = new ArrayBlockingQueue<>(queueSize);
+  private boolean conSumerShouldStop() {
+    return isAllProcuderEnd()&& isBufferEmpty();
   }
 
-  private void setQueueToAllElements() {
-    for(ProducerElement p : this.producerList){
-      p.setQueue(queue);
-    }
-    for(ConsumerElement c : this.consumerList){
-      c.setQueue(queue);
-    }
+  private boolean isBufferEmpty(){
+    return this.queue.size()==0;
   }
-
-  private void startAllElements() {
-    addToThreadSetAndStartAllProducer();
-    addToThreadSetAndStartAllConsumer();
-  }
-
   private boolean isAllProcuderEnd() {
     return isAllThreadsEnd(this.producerThreads);
   }
@@ -87,6 +70,7 @@ public class ProducerConsumerSystem <T>{
   }
 
   private void tryToStopAllConsumer(){
+    System.out.println("Try to stop all consumers");
     for (Thread t : consumerThreads) {
       if (t.getState() == Thread.State.WAITING) {
         t.interrupt();
@@ -104,72 +88,54 @@ public class ProducerConsumerSystem <T>{
     return allEnd;
   }
 
-  private synchronized void setState(State newState){
-    this.state = newState;
-  }
-
-  private synchronized State getState(){
-    return this.state;
-  }
-
-  private void addToThreadSetAndStartAllConsumer() {
-    //starting consumer to consume messages from queue
-    for(ConsumerElement c : this.consumerList) {
-      Thread t = new Thread(c);
-      consumerThreads.add(t);
-      t.start();
+  public void startProducers(Collection<ProducerElement> producers) {
+    for(ProducerElement p : producers){
+      startProducer(p);
     }
   }
 
-  private void addToThreadSetAndStartAllProducer() {
-    //starting producer to produce messages in queue
-    for(ProducerElement p : this.producerList) {
-      Thread t = new Thread(p);
-      producerThreads.add(t);
-      t.start();
-    }
-  }
-
-  public void setBufferSize(int queueSize) {
-    this.queueSize = queueSize;
-  }
-
-  public void addProducer(ProducerElement producerObj){
-    if(getState() == State.BeforeRunning) {
-      this.producerList.add(producerObj);
-    }else if(getState() == State.Running){
-      setQueueAndStart(producerObj);
-    }
-  }
-
-  private void setQueueAndStart(ProducerElement producerObj) {
+  public void startProducer(ProducerElement producerObj){
     producerObj.setQueue(queue);
-    Thread t = new Thread(producerObj);
-    this.producerThreads.add(t);
+    Thread t = createProducerThread(producerObj);
     t.start();
   }
 
-  public <P extends ProducerElement> AddProducerTemp addProducer(
+  private Thread createProducerThread(ProducerElement producerObj) {
+    Thread t = new Thread(producerObj);
+    this.producerThreads.add(t);
+    return t;
+  }
+
+  public <P extends ProducerElement> StartProducerTemp startProducer(
     Class<P> producerClass) {
-    return new AddProducerTemp(producerClass, this);
+    return new StartProducerTemp(producerClass, this);
   }
 
-  public void addConsumer(ConsumerElement consumerObj) {
-    this.consumerList.add(consumerObj);
+
+  public void startConsumers(Collection<ConsumerElement> consumers) {
+    for(ConsumerElement c : consumers){
+      startConsumer(c);
+    }
   }
 
-  public <C extends ConsumerElement> AddConsumerTemp addConsumer(
+  public void startConsumer(ConsumerElement consumerObj) {
+    consumerObj.setQueue(queue);
+    Thread t = createConsumerThread(consumerObj);
+    t.start();
+  }
+
+  private Thread createConsumerThread(ConsumerElement consumerObj) {
+    Thread t = new Thread(consumerObj);
+    this.consumerThreads.add(t);
+    return t;
+  }
+
+  public <C extends ConsumerElement> startConsumerTemp startConsumer(
     Class<C> consumerClass) {
-    return new AddConsumerTemp(consumerClass, this);
+    return new startConsumerTemp(consumerClass, this);
   }
 
-  public void addConsumers(Collection<ConsumerElement> consumers) {
-    this.consumerList.addAll(consumers);
-  }
 
-  public void addProducers(Collection<ProducerElement> producers) {
-    this.producerList.addAll(producers);
-  }
 
   //I don't like everytime I want threads to sleep , I have to do try catch
   // in that method, so I create this method.

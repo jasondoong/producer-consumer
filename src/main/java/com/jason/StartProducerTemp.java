@@ -3,10 +3,10 @@ package com.jason;
 /**
  * Created by jason on 2015/1/24.
  */
-public class AddProducerTemp <P extends ProducerElement>{
+public class StartProducerTemp<P extends ProducerElement>{
   private Class<P> producerClass;
   private ProducerConsumerSystem system;
-  public  AddProducerTemp(Class<P> producerClass,
+  public StartProducerTemp(Class<P> producerClass,
     ProducerConsumerSystem system) {
     this.producerClass = producerClass;
     this.system = system;
@@ -16,7 +16,7 @@ public class AddProducerTemp <P extends ProducerElement>{
     throws IllegalAccessException, InstantiationException{
 
     for(int i=0; i<instanceNum; i++) {
-      system.addProducer(this.producerClass.newInstance());
+      system.startProducer(this.producerClass.newInstance());
     }
   }
 }

@@ -15,7 +15,7 @@ public class MyConsumer extends ConsumerElement<Message> {
         System.out.println("                        "+
           "["+Thread.currentThread().getId()+"]"+
           " takes "+msg.getMsg());
-        Thread.sleep(2000);
+        Thread.sleep(1000);
       }
     }catch(InterruptedException e) {
       System.out.println("Consumer stops cause of interrupt");
