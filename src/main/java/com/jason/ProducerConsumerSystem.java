@@ -4,11 +4,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class ProducerConsumerSystem <T>{
 
-  private Collection<Thread> producerThreads = new HashSet<>();
-  private Collection<Thread> consumerThreads = new HashSet<>();
+  private Collection<Thread> producerThreads = new CopyOnWriteArraySet<>();
+  private Collection<Thread> consumerThreads = new CopyOnWriteArraySet<>();
 
   private BlockingQueue<T> queue;
   private ProducerConsumerSystem thisSystem;
