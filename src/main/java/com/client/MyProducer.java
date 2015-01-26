@@ -30,12 +30,5 @@ public class MyProducer extends ProducerElement<Message> {
         e.printStackTrace();
       }
     }
-    //adding exit message
-    Message msg = new Message("exit");
-    try {
-      queue.put(msg);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
   }
 }
