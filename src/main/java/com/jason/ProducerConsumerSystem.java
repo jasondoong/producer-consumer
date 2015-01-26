@@ -12,15 +12,19 @@ public class ProducerConsumerSystem <T>{
   private Collection<ConsumerElement> consumerList = new HashSet<ConsumerElement>();
   private Collection<Thread> producerThreads = new HashSet<>();
   private Collection<Thread> consumerThreads = new HashSet<>();
+
   private State state;
   private BlockingQueue<T> queue;
   private ProducerConsumerSystem thisSystem;
+
+  private Boolean allConsumerTerminated;
 
   enum State{
     BeforeRunning, Running, AllProcuderTerminated
   }
 
   public ProducerConsumerSystem(){
+
     setState(State.BeforeRunning);
     thisSystem = this;
   }
@@ -30,13 +34,73 @@ public class ProducerConsumerSystem <T>{
       setState(State.Running);
       startMainFlow();
       startMonitoringProducerThreads();
-
+      startMonitoringConsumerThreads();
+      waitProducerEndThenStopConsumer();
       //Todo: set state to State.AfterRunnig when all tasks end
     } catch (IllegalAccessException e) {
       e.printStackTrace();
     } catch (InstantiationException e) {
       e.printStackTrace();
     }
+  }
+
+  private void waitProducerEndThenStopConsumer() {
+    new Thread(){
+      public void run(){
+        while(true) {
+          if(thisSystem.isAllProcuderEnd()){
+            tryToStopAllConsumer();
+          }
+
+          if(thisSystem.isAllConsumerEnd()){
+            break;
+          }
+          threadSleep(500);
+        }
+      }
+    }.start();
+  }
+
+  private boolean isAllProcuderEnd() {
+    return getState()==State.AllProcuderTerminated;
+  }
+
+  private boolean isAllConsumerEnd(){
+    boolean allEnd = true;
+    for(Thread t : consumerThreads){
+      if(t.getState()!=Thread.State.TERMINATED){
+        allEnd = false;
+        break;
+      }
+    }
+    return allEnd;
+  }
+
+  private void tryToStopAllConsumer(){
+    for (Thread t : consumerThreads) {
+      if (t.getState() == Thread.State.WAITING) {
+        t.interrupt();
+      }
+    }
+  }
+
+  private void startMonitoringConsumerThreads() {
+    new Thread(){
+      public void run(){
+        while(true) {
+          if (isAllThreadsEnd(consumerThreads)) {
+            thisSystem.allConsumerTerminated = true;
+            System.out.println("allConsumerTerminated");
+            break;
+          }else {
+            for (Thread t : consumerThreads) {
+              System.out.println(t.getState());
+            }
+          }
+          threadSleep(500);
+        }
+      }
+    }.start();
   }
 
   //Todo: what if user add a new producer after all producer threads are terminated?
@@ -49,9 +113,7 @@ public class ProducerConsumerSystem <T>{
             System.out.println(thisSystem.getState());
             break;
           }
-
           threadSleep(500);
-
         }
       }
     }.start();
@@ -91,6 +153,7 @@ public class ProducerConsumerSystem <T>{
 
   private void addToThreadSetAndStartAllConsumer() {
     //starting consumer to consume messages from queue
+    allConsumerTerminated = false;
     for(ConsumerElement c : this.consumerList) {
       Thread t = new Thread(c);
       consumerThreads.add(t);

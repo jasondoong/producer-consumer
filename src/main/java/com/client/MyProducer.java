@@ -18,7 +18,7 @@ public class MyProducer extends ProducerElement<Message> {
   @Override
   public void run() {
     //produce messages
-    for(int i=0; i<10; i++){
+    for(int i=0; i<3; i++){
       Message msg = new Message("["+Thread.currentThread().getId()+"]"+":"+
         this.basicMessage+" "+i);
       try {

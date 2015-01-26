@@ -18,7 +18,7 @@ public class MyConsumer extends ConsumerElement<Message> {
         Thread.sleep(2000);
       }
     }catch(InterruptedException e) {
-      e.printStackTrace();
+      System.out.println("Consumer stops cause of interrupt");
     }
   }
 }
