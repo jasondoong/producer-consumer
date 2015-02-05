@@ -12,18 +12,21 @@ public class Main {
     public static void main(String[] args)
       throws InstantiationException, IllegalAccessException{
 
-        int bufferSize = 20;
-        ProducerConsumerSystem system = new ProducerConsumerSystem(bufferSize);
-        system.startProducer(MyProducer.class).instanceNum(2);
-        system.startConsumer(MyConsumer.class).instanceNum(1);
+      example1();
+    }
+
+    private static void example1() throws InstantiationException, IllegalAccessException {
+      int bufferSize = 20;
+      ProducerConsumerSystem system = new ProducerConsumerSystem(bufferSize);
+      system.startProducer(MyProducer.class).instanceNum(2);
+      system.startConsumer(MyConsumer.class).instanceNum(1);
 
 
-        //you can add new producer after system starts
-        system.startProducer(new MyProducer("dynamic"));
+      //you can add new producer after system starts
+      system.startProducer(new MyProducer("dynamic"));
 
-        //you can add new consumer too
-        system.startConsumer(new MyConsumer());
-
+      //you can add new consumer too
+      system.startConsumer(new MyConsumer());
     }
 
     private static void addProducers(ProducerConsumerSystem system)
