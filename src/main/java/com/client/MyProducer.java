@@ -8,6 +8,7 @@ import com.jason.ProducerElement;
 public class MyProducer extends ProducerElement<Message> {
 
   String basicMessage;
+
   public MyProducer(String message){
     this.basicMessage = message;
   }
@@ -15,20 +16,20 @@ public class MyProducer extends ProducerElement<Message> {
   public MyProducer(){
     this.basicMessage = "default";
   }
+
   @Override
-  public void run() {
-    //produce messages
+  protected void produce() throws InterruptedException {
     for(int i=0; i<3; i++){
       Message msg = new Message("["+Thread.currentThread().getId()+"]"+":"+
         this.basicMessage+" "+i);
-      try {
-        Thread.sleep(500);
-        addToBuffer(msg);
-        System.out.println(
-          " Puts "+msg.getMsg());
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+      addToBuffer(msg);
+      System.out.println(" Puts "+msg.getMsg());
     }
   }
+
+  @Override
+  protected void interruptHandler() {
+    System.out.println("producer is interrupted");
+  }
+  
 }
