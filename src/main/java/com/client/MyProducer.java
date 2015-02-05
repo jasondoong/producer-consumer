@@ -5,7 +5,7 @@ import com.jason.ProducerElement;
 /**
  * Created by jason on 2015/1/24.
  */
-public class MyProducer extends ProducerElement<Message> {
+public class MyProducer extends ProducerElement<String> {
 
   String basicMessage;
 
@@ -20,10 +20,10 @@ public class MyProducer extends ProducerElement<Message> {
   @Override
   protected void produce() throws InterruptedException {
     for(int i=0; i<3; i++){
-      Message msg = new Message("["+Thread.currentThread().getId()+"]"+":"+
-        this.basicMessage+" "+i);
+      String msg = "["+Thread.currentThread().getId()+"]"+":"+
+        this.basicMessage+" "+i;
       addToBuffer(msg);
-      System.out.println(" Puts "+msg.getMsg());
+      System.out.println(" Puts "+msg);
     }
   }
 

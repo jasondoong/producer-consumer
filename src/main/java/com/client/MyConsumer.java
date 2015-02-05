@@ -5,13 +5,13 @@ import com.jason.ConsumerElement;
 /**
  * Created by jason on 2015/1/24.
  */
-public class MyConsumer extends ConsumerElement<Message> {
+public class MyConsumer extends ConsumerElement<String> {
 
   @Override
-  protected void consume(Message msg) throws InterruptedException {
+  protected void consume(String msg) throws InterruptedException {
     System.out.println("                        "+
       "["+Thread.currentThread().getId()+"]"+
-      " takes "+msg.getMsg());
+      " takes "+msg);
     Thread.sleep(1000);
   }
 
