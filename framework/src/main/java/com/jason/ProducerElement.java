@@ -11,8 +11,12 @@ public abstract class ProducerElement<T> extends Element<T> {
     try {
       open();
       while(hasNext()){
+
         T object = produce();
         addToBuffer(object);
+
+        if(QueueSizeLogger.isQueueLoggerEnabled())
+          QueueSizeLogger.logQueuSize();
       }
       close();
     } catch (InterruptedException e) {

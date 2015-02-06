@@ -11,8 +11,12 @@ public abstract class ConsumerElement<T> extends Element<T> {
     try{
       //consuming messages until exit message is received
       while(true){
+
         T item = getFromBuffer();
         consume(item);
+
+        if(QueueSizeLogger.isQueueLoggerEnabled())
+          QueueSizeLogger.logQueuSize();
       }
     }catch(InterruptedException e) {
       interruptHandler();

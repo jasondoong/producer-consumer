@@ -51,8 +51,12 @@ public class ProducerConsumerSystem <T>{
           }
           threadSleep(500);
         }
+        systemClose();
       }
     }.start();
+  }
+  private void systemClose(){
+    QueueSizeLogger.close();
   }
 
   private boolean consumersShouldStop() {
@@ -148,6 +152,9 @@ public class ProducerConsumerSystem <T>{
     }
   }
 
+  public void enableQueueLogger() {
+    QueueSizeLogger.enable(queue);
+  }
 }
 
 
