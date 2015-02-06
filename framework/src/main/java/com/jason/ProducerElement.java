@@ -9,14 +9,25 @@ public abstract class ProducerElement<T> extends Element<T> {
   @Override
   public void run() {
     try {
-      produce();
+      open();
+      while(hasNext()){
+        T object = produce();
+        addToBuffer(object);
+      }
+      close();
     } catch (InterruptedException e) {
       interruptHandler();
     }
   }
 
-  protected abstract void interruptHandler();
+  protected void open(){};
 
-  protected abstract void produce() throws InterruptedException;
+  protected abstract boolean hasNext();
+
+  protected abstract T produce();
+
+  protected void close(){}
+
+  protected abstract void interruptHandler();
 
 }
