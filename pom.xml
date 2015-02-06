@@ -8,6 +8,7 @@
     <modules>
         <module>framework</module>
         <module>client</module>
+        <module>database-example</module>
     </modules>
     <name>producer-consumer</name>
   <url>http://maven.apache.org</url>
