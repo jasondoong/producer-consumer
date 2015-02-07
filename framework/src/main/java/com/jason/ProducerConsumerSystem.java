@@ -1,7 +1,10 @@
 package com.jason;
 
+import com.jason.record.NullQueueSizeLogger;
+import com.jason.record.QueueSizeLogger;
+import com.jason.record.QueueSizeLoggerImpl;
+
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -13,6 +16,7 @@ public class ProducerConsumerSystem <T>{
 
   private BlockingQueue<T> queue;
   private ProducerConsumerSystem thisSystem;
+  private QueueSizeLogger queueSizeLogger = new NullQueueSizeLogger();
 
   public ProducerConsumerSystem(int bufferSize){
     thisSystem = this;
@@ -56,7 +60,7 @@ public class ProducerConsumerSystem <T>{
     }.start();
   }
   private void systemClose(){
-    QueueSizeLogger.close();
+    queueSizeLogger.close();
   }
 
   private boolean consumersShouldStop() {
@@ -100,6 +104,7 @@ public class ProducerConsumerSystem <T>{
   }
 
   public void startProducer(ProducerElement producerObj){
+    producerObj.setHostedSystem(this);
     producerObj.setQueue(queue);
     Thread t = createProducerThread(producerObj);
     t.start();
@@ -124,6 +129,7 @@ public class ProducerConsumerSystem <T>{
   }
 
   public void startConsumer(ConsumerElement consumerObj) {
+    consumerObj.setHostedSystem(this);
     consumerObj.setQueue(queue);
     Thread t = createConsumerThread(consumerObj);
     t.start();
@@ -153,7 +159,11 @@ public class ProducerConsumerSystem <T>{
   }
 
   public void enableQueueLogger() {
-    QueueSizeLogger.enable(queue);
+    queueSizeLogger = new QueueSizeLoggerImpl(queue);
+  }
+
+  public void logQueueSize() {
+    queueSizeLogger.logQueuSize();
   }
 }
 

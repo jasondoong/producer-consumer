@@ -1,5 +1,7 @@
 package com.jason;
 
+import com.jason.record.QueueSizeLoggerImpl;
+
 public abstract class ConsumerElement<T> extends Element<T> {
 
   protected T getFromBuffer() throws InterruptedException {
@@ -15,8 +17,7 @@ public abstract class ConsumerElement<T> extends Element<T> {
         T item = getFromBuffer();
         consume(item);
 
-        if(QueueSizeLogger.isQueueLoggerEnabled())
-          QueueSizeLogger.logQueuSize();
+        logQueuSize();
       }
     }catch(InterruptedException e) {
       interruptHandler();

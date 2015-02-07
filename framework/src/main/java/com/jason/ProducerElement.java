@@ -1,5 +1,7 @@
 package com.jason;
 
+import com.jason.record.QueueSizeLoggerImpl;
+
 public abstract class ProducerElement<T> extends Element<T> {
 
   protected void addToBuffer(T object) throws InterruptedException {
@@ -15,8 +17,7 @@ public abstract class ProducerElement<T> extends Element<T> {
         T object = produce();
         addToBuffer(object);
 
-        if(QueueSizeLogger.isQueueLoggerEnabled())
-          QueueSizeLogger.logQueuSize();
+        logQueuSize();
       }
       close();
     } catch (InterruptedException e) {
