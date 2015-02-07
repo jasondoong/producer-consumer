@@ -3,10 +3,10 @@ package com.jason;
 /**
  * Created by jason on 2015/1/24.
  */
-public  class startConsumerTemp<C extends ConsumerElement>{
+public  class ConsumerBuilder<C extends ConsumerElement>{
   private Class<C> consumerClass;
   private ProducerConsumerSystem system;
-  public startConsumerTemp(Class<C> consumerClass,
+  public ConsumerBuilder(Class<C> consumerClass,
     ProducerConsumerSystem system) {
     this.consumerClass = consumerClass;
     this.system = system;

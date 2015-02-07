@@ -3,10 +3,10 @@ package com.jason;
 /**
  * Created by jason on 2015/1/24.
  */
-public class StartProducerTemp<P extends ProducerElement>{
+public class ProducerBuilder<P extends ProducerElement>{
   private Class<P> producerClass;
   private ProducerConsumerSystem system;
-  public StartProducerTemp(Class<P> producerClass,
+  public ProducerBuilder(Class<P> producerClass,
     ProducerConsumerSystem system) {
     this.producerClass = producerClass;
     this.system = system;

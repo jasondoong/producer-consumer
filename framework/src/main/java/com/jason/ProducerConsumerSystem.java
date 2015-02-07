@@ -11,6 +11,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 public class ProducerConsumerSystem <T>{
 
+  private final int bufferSize;
   private Collection<Thread> producerThreads = new CopyOnWriteArraySet<>();
   private Collection<Thread> consumerThreads = new CopyOnWriteArraySet<>();
 
@@ -20,7 +21,51 @@ public class ProducerConsumerSystem <T>{
 
   public ProducerConsumerSystem(int bufferSize){
     thisSystem = this;
-    initialBuffer(bufferSize);
+    this.bufferSize = bufferSize;
+    initialProcedure();
+  }
+
+
+  //first way to start producer/consumer
+  public void startProducer(ProducerElement producerObj){
+    Thread t = producerObj.initAndStart(this, queue);
+    this.producerThreads.add(t);
+  }
+
+  public void startConsumer(ConsumerElement consumerObj) {
+    Thread t = consumerObj.initAndStart(this, queue);
+    this.consumerThreads.add(t);
+  }
+
+
+  //second way to start producer/consumer
+  public <P extends ProducerElement> ProducerBuilder startProducer(
+    Class<P> producerClass) {
+    return new ProducerBuilder(producerClass, this);
+  }
+
+  public <C extends ConsumerElement> ConsumerBuilder startConsumer(
+    Class<C> consumerClass) {
+    return new ConsumerBuilder(consumerClass, this);
+  }
+
+
+  //third way to start producer/consumer
+  public void startProducers(Collection<ProducerElement> producers) {
+    for(ProducerElement p : producers){
+      startProducer(p);
+    }
+  }
+
+  public void startConsumers(Collection<ConsumerElement> consumers) {
+    for(ConsumerElement c : consumers){
+      startConsumer(c);
+    }
+  }
+
+
+  private void initialProcedure() {
+    initialBuffer(this.bufferSize);
     waitingFirstProducer();
   }
 
@@ -59,6 +104,7 @@ public class ProducerConsumerSystem <T>{
       }
     }.start();
   }
+
   private void systemClose(){
     queueSizeLogger.close();
   }
@@ -97,42 +143,14 @@ public class ProducerConsumerSystem <T>{
     return allEnd;
   }
 
-  public <P extends ProducerElement> StartProducerTemp startProducer(
-    Class<P> producerClass) {
-    return new StartProducerTemp(producerClass, this);
+
+  public void enableQueueLogger() {
+    queueSizeLogger = new QueueSizeLoggerImpl(queue);
   }
 
-  public <C extends ConsumerElement> startConsumerTemp startConsumer(
-    Class<C> consumerClass) {
-    return new startConsumerTemp(consumerClass, this);
+  public void logQueueSize() {
+    queueSizeLogger.logQueuSize();
   }
-
-
-  //=====================================
-  public void startProducers(Collection<ProducerElement> producers) {
-    for(ProducerElement p : producers){
-      startProducer(p);
-    }
-  }
-
-  public void startProducer(ProducerElement producerObj){
-    Thread t = producerObj.initAndStart(this, queue);
-    this.producerThreads.add(t);
-  }
-
-  public void startConsumers(Collection<ConsumerElement> consumers) {
-    for(ConsumerElement c : consumers){
-      startConsumer(c);
-    }
-  }
-
-  public void startConsumer(ConsumerElement consumerObj) {
-    Thread t = consumerObj.initAndStart(this, queue);
-    this.consumerThreads.add(t);
-  }
-
-  //=========================================================================
-
 
   //I don't like everytime I want threads to sleep , I have to do try catch
   // in that method, so I create this method.
@@ -144,13 +162,6 @@ public class ProducerConsumerSystem <T>{
     }
   }
 
-  public void enableQueueLogger() {
-    queueSizeLogger = new QueueSizeLoggerImpl(queue);
-  }
-
-  public void logQueueSize() {
-    queueSizeLogger.logQueuSize();
-  }
 }
 
 
