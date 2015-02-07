@@ -116,13 +116,8 @@ public class ProducerConsumerSystem <T>{
   }
 
   public void startProducer(ProducerElement producerObj){
-    startElement(producerObj);
-    Thread t = createProducerThread(producerObj);
-    t.start();
-  }
-
-  private Thread createProducerThread(ProducerElement producerObj) {
-    return createThread(producerObj, this.producerThreads);
+    Thread t = producerObj.initAndStart(this, queue);
+    this.producerThreads.add(t);
   }
 
   public void startConsumers(Collection<ConsumerElement> consumers) {
@@ -132,25 +127,12 @@ public class ProducerConsumerSystem <T>{
   }
 
   public void startConsumer(ConsumerElement consumerObj) {
-    startElement(consumerObj);
-    Thread t = createConsumerThread(consumerObj);
-    t.start();
+    Thread t = consumerObj.initAndStart(this, queue);
+    this.consumerThreads.add(t);
   }
 
-  private Thread createConsumerThread(ConsumerElement consumerObj) {
-    return createThread(consumerObj, this.consumerThreads);
-  }
+  //=========================================================================
 
-  private void startElement(Element element){
-    element.setHostedSystem(this);
-    element.setQueue(queue);
-  }
-
-  private Thread createThread(Element element, Collection<Thread> collection ){
-    Thread t = new Thread(element);
-    collection.add(t);
-    return t;
-  }
 
   //I don't like everytime I want threads to sleep , I have to do try catch
   // in that method, so I create this method.
