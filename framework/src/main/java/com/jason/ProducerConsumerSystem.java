@@ -97,48 +97,9 @@ public class ProducerConsumerSystem <T>{
     return allEnd;
   }
 
-  public void startProducers(Collection<ProducerElement> producers) {
-    for(ProducerElement p : producers){
-      startProducer(p);
-    }
-  }
-
-  public void startProducer(ProducerElement producerObj){
-    producerObj.setHostedSystem(this);
-    producerObj.setQueue(queue);
-    Thread t = createProducerThread(producerObj);
-    t.start();
-  }
-
-  private Thread createProducerThread(ProducerElement producerObj) {
-    Thread t = new Thread(producerObj);
-    this.producerThreads.add(t);
-    return t;
-  }
-
   public <P extends ProducerElement> StartProducerTemp startProducer(
     Class<P> producerClass) {
     return new StartProducerTemp(producerClass, this);
-  }
-
-
-  public void startConsumers(Collection<ConsumerElement> consumers) {
-    for(ConsumerElement c : consumers){
-      startConsumer(c);
-    }
-  }
-
-  public void startConsumer(ConsumerElement consumerObj) {
-    consumerObj.setHostedSystem(this);
-    consumerObj.setQueue(queue);
-    Thread t = createConsumerThread(consumerObj);
-    t.start();
-  }
-
-  private Thread createConsumerThread(ConsumerElement consumerObj) {
-    Thread t = new Thread(consumerObj);
-    this.consumerThreads.add(t);
-    return t;
   }
 
   public <C extends ConsumerElement> startConsumerTemp startConsumer(
@@ -147,6 +108,49 @@ public class ProducerConsumerSystem <T>{
   }
 
 
+  //=====================================
+  public void startProducers(Collection<ProducerElement> producers) {
+    for(ProducerElement p : producers){
+      startProducer(p);
+    }
+  }
+
+  public void startProducer(ProducerElement producerObj){
+    startElement(producerObj);
+    Thread t = createProducerThread(producerObj);
+    t.start();
+  }
+
+  private Thread createProducerThread(ProducerElement producerObj) {
+    return createThread(producerObj, this.producerThreads);
+  }
+
+  public void startConsumers(Collection<ConsumerElement> consumers) {
+    for(ConsumerElement c : consumers){
+      startConsumer(c);
+    }
+  }
+
+  public void startConsumer(ConsumerElement consumerObj) {
+    startElement(consumerObj);
+    Thread t = createConsumerThread(consumerObj);
+    t.start();
+  }
+
+  private Thread createConsumerThread(ConsumerElement consumerObj) {
+    return createThread(consumerObj, this.consumerThreads);
+  }
+
+  private void startElement(Element element){
+    element.setHostedSystem(this);
+    element.setQueue(queue);
+  }
+
+  private Thread createThread(Element element, Collection<Thread> collection ){
+    Thread t = new Thread(element);
+    collection.add(t);
+    return t;
+  }
 
   //I don't like everytime I want threads to sleep , I have to do try catch
   // in that method, so I create this method.
