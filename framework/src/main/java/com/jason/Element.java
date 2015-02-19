@@ -1,20 +1,18 @@
 package com.jason;
 
-import java.util.concurrent.BlockingQueue;
-
 /**
  * Created by jason on 2015/1/24.
  */
 public abstract class Element<T> implements Runnable{
-  protected BlockingQueue<T> queue;
+  protected ObservableBuffer<T> queue;
   public ProducerConsumerSystem hostedSystem;
 
-  public Thread initAndStart(ProducerConsumerSystem system, BlockingQueue queue){
+  public Thread initAndStart(ProducerConsumerSystem system, ObservableBuffer queue){
     init(system, queue);
     return start();
   }
 
-  private void init(ProducerConsumerSystem system, BlockingQueue queue) {
+  private void init(ProducerConsumerSystem system, ObservableBuffer queue) {
     this.setHostedSystem(system);
     this.setQueue(queue);
   }
@@ -33,7 +31,7 @@ public abstract class Element<T> implements Runnable{
     this.hostedSystem = system;
   }
 
-  private void setQueue(BlockingQueue<T> q){
+  private void setQueue(ObservableBuffer<T> q){
     this.queue=q;
   }
 

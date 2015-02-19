@@ -5,8 +5,6 @@ import com.jason.record.QueueSizeLogger;
 import com.jason.record.QueueSizeLoggerImpl;
 
 import java.util.Collection;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public class ProducerConsumerSystem <T>{
@@ -15,7 +13,7 @@ public class ProducerConsumerSystem <T>{
   private Collection<Thread> producerThreads = new CopyOnWriteArraySet<>();
   private Collection<Thread> consumerThreads = new CopyOnWriteArraySet<>();
 
-  private BlockingQueue<T> queue;
+  private ObservableBuffer<T> queue;
   private ProducerConsumerSystem thisSystem;
   private QueueSizeLogger queueSizeLogger = new NullQueueSizeLogger();
 
@@ -70,7 +68,7 @@ public class ProducerConsumerSystem <T>{
   }
 
   private void initialBuffer(int bufferSize) {
-    queue = new ArrayBlockingQueue<>(bufferSize);
+    queue = new ObservableBufferImpl<>(bufferSize);
   }
 
   private void waitingFirstProducer() {

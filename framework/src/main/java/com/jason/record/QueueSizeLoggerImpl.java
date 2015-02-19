@@ -1,6 +1,6 @@
 package com.jason.record;
 
-import java.util.concurrent.BlockingQueue;
+import com.jason.ObservableBuffer;
 
 /**
  * Created by jason on 2015/2/6.
@@ -8,11 +8,11 @@ import java.util.concurrent.BlockingQueue;
 
 public class QueueSizeLoggerImpl implements QueueSizeLogger {
 
-  private BlockingQueue queue;
+  private ObservableBuffer queue;
   private long startTime;
   private String log = "";
 
-  public QueueSizeLoggerImpl(BlockingQueue queue){
+  public QueueSizeLoggerImpl(ObservableBuffer queue){
     this.queue = queue;
     startLogging();
   }
