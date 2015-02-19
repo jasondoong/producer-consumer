@@ -1,13 +1,11 @@
 package com.jason;
 
-import com.jason.record.NullQueueSizeLogger;
-import com.jason.record.QueueSizeLogger;
-import com.jason.record.QueueSizeLoggerImpl;
-
 import java.util.Collection;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-public class ProducerConsumerSystem <T>{
+public class ProducerConsumerSystem <T> implements Observer{
 
   private final int bufferSize;
   private Collection<Thread> producerThreads = new CopyOnWriteArraySet<>();
@@ -15,7 +13,7 @@ public class ProducerConsumerSystem <T>{
 
   private ObservableBuffer<T> queue;
   private ProducerConsumerSystem thisSystem;
-  private QueueSizeLogger queueSizeLogger = new NullQueueSizeLogger();
+  //private QueueSizeLogger queueSizeLogger = new NullQueueSizeLogger();
 
   public ProducerConsumerSystem(int bufferSize){
     thisSystem = this;
@@ -64,6 +62,7 @@ public class ProducerConsumerSystem <T>{
 
   private void initialProcedure() {
     initialBuffer(this.bufferSize);
+    this.queue.addObserver(this);
     waitingFirstProducer();
   }
 
@@ -104,7 +103,7 @@ public class ProducerConsumerSystem <T>{
   }
 
   private void systemClose(){
-    queueSizeLogger.close();
+    //queueSizeLogger.close();
   }
 
   private boolean consumersShouldStop() {
@@ -141,15 +140,6 @@ public class ProducerConsumerSystem <T>{
     return allEnd;
   }
 
-
-  public void enableQueueLogger() {
-    queueSizeLogger = new QueueSizeLoggerImpl(queue);
-  }
-
-  public void logQueueSize() {
-    queueSizeLogger.logQueuSize();
-  }
-
   //I don't like everytime I want threads to sleep , I have to do try catch
   // in that method, so I create this method.
   void threadSleep(int milliseconds){
@@ -158,6 +148,12 @@ public class ProducerConsumerSystem <T>{
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
+  }
+
+  //Each time ObservableBuffer is updated, it will call this function
+  @Override
+  public void update(Observable o, Object arg) {
+    System.out.println("                                                        "+arg);
   }
 
 }

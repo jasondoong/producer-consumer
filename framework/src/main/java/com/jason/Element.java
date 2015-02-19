@@ -23,10 +23,6 @@ public abstract class Element<T> implements Runnable{
     return t;
   }
 
-  protected void logQueuSize(){
-    hostedSystem.logQueueSize();
-  }
-
   private void setHostedSystem(ProducerConsumerSystem system){
     this.hostedSystem = system;
   }

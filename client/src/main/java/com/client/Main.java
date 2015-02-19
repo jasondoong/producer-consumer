@@ -18,7 +18,6 @@ public class Main {
     private static void example1() throws InstantiationException, IllegalAccessException {
       int bufferSize = 20;
       ProducerConsumerSystem system = new ProducerConsumerSystem(bufferSize);
-      system.enableQueueLogger();
       system.startProducer(MyProducer.class).instanceNum(2);
       system.startConsumer(MyConsumer.class).instanceNum(5);
 
