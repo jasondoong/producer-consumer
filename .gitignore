@@ -1,0 +1,6 @@
+.idea/
+client/client.iml
+client/target/
+framework/target/
+target/
+producer-consumer.iml
