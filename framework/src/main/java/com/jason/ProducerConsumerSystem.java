@@ -156,6 +156,9 @@ public class ProducerConsumerSystem <T> implements Observer{
     System.out.println("                                                        "+arg);
   }
 
+  public void adddQueueSizeObserver(Observer observer){
+    this.queue.addObserver(observer);
+  }
 }
 
 
