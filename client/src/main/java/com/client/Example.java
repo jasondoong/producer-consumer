@@ -7,7 +7,7 @@ import com.jason.ProducerConsumerSystem;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class Main {
+public class Example {
 
     public static void main(String[] args)
       throws InstantiationException, IllegalAccessException{
